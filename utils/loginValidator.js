@@ -6,9 +6,7 @@ module.exports = function validateInput(data) {
 
     // if these values are not present in the data object we are validating then they will be set to empty strings for the Validator.isEmpty
     data.username = !isEmpty(data.username) ? data.username : "";
-    data.email = !isEmpty(data.email) ? data.email : "";
     data.password = !isEmpty(data.password) ? data.password : "";
-    data.passconfirm = !isEmpty(data.passconfirm) ? data.passconfirm : "";
 
     //account creation validation rules
     if (!Validator.isLength(data.username, { min: 2, max: 30 })) {
@@ -23,24 +21,12 @@ module.exports = function validateInput(data) {
         errors.username = "User name field is required";
     }
 
-    if (Validator.isEmail(data.email)) {
-        errors.email = "email is not valid";
-    }
-
-    if (Validator.isEmpty(data.email)) {
-        errors.email = "email field is required";
-    }
-
     if (Validator.isAlphanumeric(data.password, 'en-GB')) {
         errors.password = "password can only include numbers and letters"
     }
 
     if (Validator.isEmpty(data.password)) {
         errors.password = "password is required"
-    }
-
-    if (data.password !== data.passconfirm) {
-        errors.passconfirm = "passwords do not match"
     }
 
     return {
