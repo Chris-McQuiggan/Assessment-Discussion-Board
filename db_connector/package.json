@@ -1,0 +1,27 @@
+{
+  "name": "assessment-discussion-board",
+  "version": "1.0.0",
+  "description": "Discussion Board Project",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chris-McQuiggan/Assessment-Discussion-Board.git"
+  },
+  "author": "Chris McQuiggan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chris-McQuiggan/Assessment-Discussion-Board/issues"
+  },
+  "homepage": "https://github.com/Chris-McQuiggan/Assessment-Discussion-Board#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.6.6",
+    "validator": "^11.1.0"
+  }
+}
