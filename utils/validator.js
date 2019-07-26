@@ -23,7 +23,7 @@ module.exports = function validateInput(data) {
         errors.username = "User name field is required";
     }
 
-    if (Validator.isEmail(data.email)) {
+    if (!Validator.isEmail(data.email)) {
         errors.email = "email is not valid";
     }
 
@@ -31,7 +31,7 @@ module.exports = function validateInput(data) {
         errors.email = "email field is required";
     }
 
-    if (Validator.isAlphanumeric(data.password, 'en-GB')) {
+    if (!Validator.isAlphanumeric(data.password, 'en-GB')) {
         errors.password = "password can only include numbers and letters"
     }
 

@@ -21,7 +21,7 @@ module.exports = function validateInput(data) {
         errors.username = "User name field is required";
     }
 
-    if (Validator.isAlphanumeric(data.password, 'en-GB')) {
+    if (!Validator.isAlphanumeric(data.password, 'en-GB')) {
         errors.password = "password can only include numbers and letters"
     }
 

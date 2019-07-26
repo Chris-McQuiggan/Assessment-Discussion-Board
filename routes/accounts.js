@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Account = require("../models/accounts");
 const Validator = require("../utils/validator");
+const loginValidator = require("../utils/loginValidator")
 const bcrypt = require("bcrypt");
 
 module.exports = router;
@@ -19,22 +20,23 @@ router.get("/test", (req, res) => {
 // @desc    Get all accounts
 // @access  Public
 router.get("/all", (req, res) => {
+
     Account.find({}, '-password')
         .then(accounts => {
             if (!accounts) {
                 res.status(404).send({ noAccounts: "There are no accounts" });
             }
-            res.json(acounts);
+            res.json(accounts);
         })
-        .catch(err => res.status(404).send({ noAccounts: "There are no accounts" }));
+        .catch(err => res.status(404).send({ noAccounts: "cant find" }));
 });
 
 // @route   POST account/login
 // @desc    logs in user
 // @access  Public
-router.post("/login", (req, res) => {
+router.get("/login", (req, res) => {
 
-    let val = Validator(req.body);
+    let val = loginValidator(req.body);
 
     if (val.isValid) {
 
@@ -52,6 +54,8 @@ router.post("/login", (req, res) => {
                 })
                     .catch(err => res.status(404).send("Password not found"));
             }).catch(err => res.status(404).send("Account not found"));
+    }else{
+        res.status(404).send("invalid username and password")
     }
 });
 
@@ -59,7 +63,7 @@ router.post("/login", (req, res) => {
 // @route   POST account/createAccount
 // @desc    Create an account
 // @access  Public
-router.get("/createAccount", (req, res) => {
+router.post("/createAccount", (req, res) => {
 
     let val = Validator(req.body);
 
