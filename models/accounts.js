@@ -20,6 +20,16 @@ let accountSchema = new Schema({
     }
 });
 
+// mongo connection
+let uri = 'mongodb://localhost:27017/accounts';
+let opts = { useNewUrlParser: true };
+
+// Account Connection
+mongoose.connect(uri,opts).then(
+    () => { console.log("By Golly It Actually Works! - Accounts")},
+    (err) => { console.log("oh dear ol' chap! looks like we need to try again.") }
+);
+
 let account = mongoose.model('account', accountSchema);
 
 module.exports = account;

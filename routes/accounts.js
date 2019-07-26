@@ -45,7 +45,6 @@ router.get("/login", (req, res) => {
 
                 bcrypt.compare(req.body.password, account.password).then(ifMatch => {
                     if (ifMatch) {
-
                         res.status(200).send({ message: "login Success" })
                     }
                     else {

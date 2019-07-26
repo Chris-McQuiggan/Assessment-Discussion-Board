@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Item = require("../models/items");
-const Validator = require("../utils/validator");
+const Validator = require("../utils/itemValidator");
 const bcrypt = require("bcrypt");
 
 // @route   GET item/test
@@ -52,11 +52,6 @@ router.post("/createItem", (req, res) => {
         res.status(200).send("Added New Item")
       })
       .catch(err => res.status(555).json({ "Fault": `${err}` }))
-
-    // newItem.save()
-    //   .then(() => res.status(200).send("Item Added"))
-    //   .catch(err => res.status(404).json({ Items: "Item not added" }));
-
   } else {
     res.status(404).send(val.errors);
   }
@@ -66,37 +61,30 @@ router.post("/createItem", (req, res) => {
 // @desc    Update first item
 // @access  Public
 router.put("/updateItem", (req, res) => {
-  
+
   let val = Validator(req.body);
 
   if (val.isValid) {
 
     Item.findOne({ "username": req.body.username })
-    .then((item) => {
+      .then((item) => {
 
-      bcrypt.compare(req.body.email, item.email).then(ifMatch => {
-        if (ifMatch) {
+        bcrypt.compare(req.body.email, item.email).then(ifMatch => {
+          if (ifMatch) {
 
-          Item.updateOne(
-            { 'username': req.body.username },
-            { $set: { 'content': req.body.content } }
-          )
-            .then(() => res.status(200).send("Item Updated"))
-            .catch(err => res.status(404).json({ noItems: "No Items Exist" }));
-        }
-        else {
-          res.send("Incorrect Email")
-        }
-      })
-        .catch(err => res.status(404).send("Incorrect User Name"));
-    }).catch(err => res.status(404).send("Incorrect User Name"));
-
-    // Item.updateOne(
-    //   { 'username': req.body.username },
-    //   { $set: { 'content': req.body.content } }
-    // )
-    //   .then(() => res.status(200).send("Item Updated"))
-    //   .catch(err => res.status(404).json({ noItems: "No Items Exist" }));
+            Item.updateOne(
+              { 'username': req.body.username },
+              { $set: { 'content': req.body.content } }
+            )
+              .then(() => res.status(200).send("Item Updated"))
+              .catch(err => res.status(404).json({ noItems: "No Items Exist" }));
+          }
+          else {
+            res.send("Incorrect Email")
+          }
+        })
+          .catch(err => res.status(404).send("Incorrect User Name"));
+      }).catch(err => res.status(404).send("Incorrect User Name"));
   }
 });
 
@@ -123,10 +111,6 @@ router.delete("/deleteItem", (req, res) => {
         }
       })
         .catch(err => res.status(404).send("Can't check email"));
-
-      // res.status(200).send("Item Deleted"))
-      // .catch(err => res.status(404).json({ noItems: "No Items Exist" }));
-
     }).catch(err => res.status(404).send("Incorrect User Name"));
 });
 
