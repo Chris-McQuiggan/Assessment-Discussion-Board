@@ -25,7 +25,7 @@ let itemSchema = new Schema({
 });
 
 // mongo connection
-let uri = 'mongodb://localhost:27017/items';
+let uri = 'mongodb://mongo:27017/items';
 let opts = { useNewUrlParser: true };
 
 // Item Connection

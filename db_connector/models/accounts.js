@@ -21,7 +21,7 @@ let accountSchema = new Schema({
 });
 
 // mongo connection
-let uri = 'mongodb://localhost:27017/accounts';
+let uri = 'mongodb://mongo:27017/accounts';
 let opts = { useNewUrlParser: true };
 
 // Account Connection

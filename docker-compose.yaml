@@ -2,14 +2,12 @@ version: '3.3'
 services:
 
     db_connector:
-      image: localhost:5000/db_connector:latest
-      deploy:
-        replicas: 1
+      image: mcquiggan/db_connector:latest
       build:
         context: ./db_connector
         dockerfile: Dockerfile
       ports:
-      - "8084:8084"
+      - "5000:5000"
       depends_on:
         - mongo
 
