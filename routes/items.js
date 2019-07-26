@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Item = require("../models/items");
-const Validator = require("../utils/itemValidator");
+const Account = require("../models/accounts")
+const itemValidator = require("../utils/itemValidator");
+const accValidator = require("../utils/loginValidator")
 const bcrypt = require("bcrypt");
 
 // @route   GET item/test
@@ -24,8 +26,9 @@ router.get("/all", (req, res) => {
       if (!items) {
         errors.noItems = "There are no items";
         res.status(404).json(errors);
+      } else {
+        res.json(items);
       }
-      res.json(items);
     })
     .catch(err => res.status(404).json({ noItems: "There are no items" }));
 });
@@ -35,25 +38,42 @@ router.get("/all", (req, res) => {
 // @access  Public
 router.post("/createItem", (req, res) => {
 
-  let val = Validator(req.body);
+  let accVal = accValidator(req.body);
+  if (accVal.isValid) {
 
-  if (val.isValid) {
+    Account.findOne({ "username": req.body.username })
+      .then((account) => {
 
-    const newItem = new Item({
-      username: req.body.username,
-      email: req.body.email,
-      content: req.body.content
-    });
+        bcrypt.compare(req.body.password, account.password).then(ifMatch => {
+          if (ifMatch) {
+            let val = itemValidator(req.body);
+            if (val.isValid) {
 
-    bcrypt.hash(req.body.email, 15)
-      .then((hash) => {
-        newItem.email = hash
-        newItem.save()
-        res.status(200).send("Added New Item")
-      })
-      .catch(err => res.status(555).json({ "Fault": `${err}` }))
+              const newItem = new Item({
+                username: req.body.username,
+                email: req.body.email,
+                content: req.body.content
+              });
+
+              bcrypt.hash(req.body.email, 15)
+                .then((hash) => {
+                  newItem.email = hash
+                  newItem.save()
+                  res.status(200).send("Added New Item")
+                })
+                .catch(err => res.status(555).json({ "Fault": `${err}` }))
+            } else {
+              res.status(404).send(val.errors);
+            }
+          }
+          else {
+            res.send("Incorrect Password")
+          }
+        })
+          .catch(err => res.status(404).send("Password not found"));
+      }).catch(err => res.status(404).send("Account not found"));
   } else {
-    res.status(404).send(val.errors);
+    res.status(404).send(accVal.errors);
   }
 });
 
@@ -62,7 +82,7 @@ router.post("/createItem", (req, res) => {
 // @access  Public
 router.put("/updateItem", (req, res) => {
 
-  let val = Validator(req.body);
+  let val = itemValidator(req.body);
 
   if (val.isValid) {
 
@@ -100,7 +120,6 @@ router.delete("/deleteItem", (req, res) => {
 
           Item.deleteOne({ username: req.body.username })
             .then((ok) => {
-              console.log(ok);
               if (ok.n == 0) {
                 res.status(404).send("Item not Deleted")
               } else { res.status(200).send("Item Deleted") }
