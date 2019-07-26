@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Account = require("../models/accounts");
 
+module.exports = router;
+
 // @route   GET item/test
 // @desc    Tests route
 // @access  Public
