@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+
+    db_connector:
+      image: localhost:5000/db_connector:latest
+      deploy:
+        replicas: 1
+      build:
+        context: ./db_connector
+        dockerfile: Dockerfile
+      ports:
+      - "8084:8084"
+      depends_on:
+        - mongo
+
+    mongo:
+      container_name: mongo
+      image: mongo
+      ports:
+      - "27017:27017"
