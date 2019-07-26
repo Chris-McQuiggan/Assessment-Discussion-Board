@@ -16,22 +16,6 @@ router.get("/test", (req, res) => {
     });
 });
 
-// @route   GET account/all
-// @desc    Get all accounts
-// @access  Public
-router.get("/all", (req, res) => {
-
-    Account.find({}, '-password')
-        .then(accounts => {
-            if (!accounts) {
-                res.status(404).send({ noAccounts: "There are no accounts" });
-            } else {
-                res.json(accounts);
-            }
-        })
-        .catch(err => res.status(404).send({ noAccounts: "cant find" }));
-});
-
 // @route   GET account/login
 // @desc    logs in user
 // @access  Public
