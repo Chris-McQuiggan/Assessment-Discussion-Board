@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Account = require("../models/accounts");
-const Validator = require("../utils/validator");
+const Validator = require("../utils/accountValidator");
 const loginValidator = require("../utils/loginValidator")
 const bcrypt = require("bcrypt");
 
@@ -25,13 +25,14 @@ router.get("/all", (req, res) => {
         .then(accounts => {
             if (!accounts) {
                 res.status(404).send({ noAccounts: "There are no accounts" });
+            } else {
+                res.json(accounts);
             }
-            res.json(accounts);
         })
         .catch(err => res.status(404).send({ noAccounts: "cant find" }));
 });
 
-// @route   POST account/login
+// @route   GET account/login
 // @desc    logs in user
 // @access  Public
 router.get("/login", (req, res) => {
@@ -45,7 +46,6 @@ router.get("/login", (req, res) => {
 
                 bcrypt.compare(req.body.password, account.password).then(ifMatch => {
                     if (ifMatch) {
-
                         res.status(200).send({ message: "login Success" })
                     }
                     else {

@@ -2,7 +2,7 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 //Schema
-let accountSchema = new Schema({
+let itemSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -10,26 +10,30 @@ let accountSchema = new Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
     },
-    password: {
+    content: {
         type: String,
         required: true,
-        minlength: 6,
+        minlength: 1,
         maxlength: 500
-    }
+    },
+    dateAdded: {
+        type: Date,
+        default: Date.now
+    },
 });
 
 // mongo connection
-let uri = 'mongodb://localhost:27017/accounts';
+let uri = 'mongodb://localhost:27017/items';
 let opts = { useNewUrlParser: true };
 
-// Account Connection
+// Item Connection
 mongoose.connect(uri,opts).then(
-    () => { console.log("By Golly It Actually Works! - Accounts")},
+    () => { console.log("By Golly It Actually Works! - Items")},
     (err) => { console.log("oh dear ol' chap! looks like we need to try again.") }
 );
 
-let account = mongoose.model('account', accountSchema);
+let item = mongoose.model('item', itemSchema);
 
-module.exports = account;
+module.exports = item;
