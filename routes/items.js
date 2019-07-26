@@ -82,29 +82,40 @@ router.post("/createItem", (req, res) => {
 // @access  Public
 router.put("/updateItem", (req, res) => {
 
-  let val = itemValidator(req.body);
+  let accVal = accValidator(req.body);
+  if (accVal.isValid) {
 
-  if (val.isValid) {
+    Account.findOne({ "username": req.body.username })
+      .then((account) => {
 
-    Item.findOne({ "username": req.body.username })
-      .then((item) => {
-
-        bcrypt.compare(req.body.email, item.email).then(ifMatch => {
+        bcrypt.compare(req.body.password, account.password).then(ifMatch => {
           if (ifMatch) {
-
-            Item.updateOne(
-              { 'username': req.body.username },
-              { $set: { 'content': req.body.content } }
-            )
-              .then(() => res.status(200).send("Item Updated"))
-              .catch(err => res.status(404).json({ noItems: "No Items Exist" }));
-          }
-          else {
-            res.send("Incorrect Email")
+            let val = itemValidator(req.body);
+            if (val.isValid) {
+              Item.findOne({ "username": req.body.username })
+                .then((item) => {
+                  bcrypt.compare(req.body.email, item.email).then(ifMatch => {
+                    if (ifMatch) {
+                      Item.updateOne(
+                        { 'username': req.body.username },
+                        { $set: { 'content': req.body.content } })
+                        .then(() => res.status(200).send("Item Updated"))
+                        .catch(err => res.status(404).json({ noItems: "No Items Exist" }));
+                    } else {
+                      res.send("Incorrect Email")
+                    }
+                  })
+                    .catch(err => res.status(404).send("Incorrect User Name"));
+                }).catch(err => res.status(404).send("Incorrect User Name"));
+            }
+          } else {
+            res.send("Incorrect Password")
           }
         })
-          .catch(err => res.status(404).send("Incorrect User Name"));
-      }).catch(err => res.status(404).send("Incorrect User Name"));
+          .catch(err => res.status(404).send("Password not found"));
+      }).catch(err => res.status(404).send("Account not found"));
+  } else {
+    res.status(404).send(accVal.errors);
   }
 });
 
