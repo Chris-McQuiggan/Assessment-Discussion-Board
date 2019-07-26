@@ -46,7 +46,7 @@ router.get("/login", (req, res) => {
                 bcrypt.compare(req.body.password, account.password).then(ifMatch => {
                     if (ifMatch) {
 
-                        res.status(200).send({message: "login Success"})
+                        res.status(200).send({ message: "login Success" })
                     }
                     else {
                         res.send("Incorrect Password")
@@ -54,7 +54,7 @@ router.get("/login", (req, res) => {
                 })
                     .catch(err => res.status(404).send("Password not found"));
             }).catch(err => res.status(404).send("Account not found"));
-    }else{
+    } else {
         res.status(404).send("invalid username and password")
     }
 });
@@ -75,13 +75,34 @@ router.post("/createAccount", (req, res) => {
             password: req.body.password
         });
 
-        bcrypt.hash(req.body.password, 15)
-            .then((hash) => {
-                newAccount.password = hash
-                newAccount.save()
-                res.status(200).send({ message: "Account Succesfully Created" })
+        Account.findOne({ "username": req.body.username })
+            .then((accounts) => {
+                if (accounts != null) {
+                    res.send("Username is already in use")
+                }
+                else {
+                    Account.findOne({ "email": req.body.email })
+                        .then((accounts) => {
+                            if (accounts != null) {
+                                res.send("email is already in use")
+                            } else {
+                                bcrypt.hash(req.body.password, 15)
+                                    .then((hash) => {
+                                        newAccount.password = hash
+                                        newAccount.save()
+                                        res.status(200).send({ message: "Account Succesfully Created" })
+                                    })
+                                    .catch(err => res.status(555).json({ "Fault": `${err}` }))
+                            }
+                        })
+                        .catch(() => {
+                            res.status(404).send("email not valid")
+                        })
+                }
             })
-            .catch(err => res.status(555).json({ "Fault": `${err}` }))
+            .catch(() => {
+                res.status(404).send("user name not valid")
+            })
     } else {
         res.status(404).send(val.errors);
     }
