@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Account = require("../models/accounts");
-const Validator = require("../utils/validator");
+const Validator = require("../utils/accountValidator");
 const loginValidator = require("../utils/loginValidator")
 const bcrypt = require("bcrypt");
 
@@ -31,7 +31,7 @@ router.get("/all", (req, res) => {
         .catch(err => res.status(404).send({ noAccounts: "cant find" }));
 });
 
-// @route   POST account/login
+// @route   GET account/login
 // @desc    logs in user
 // @access  Public
 router.get("/login", (req, res) => {
