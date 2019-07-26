@@ -123,25 +123,46 @@ router.put("/updateItem", (req, res) => {
 // @desc    Delete first item
 // @access  Public
 router.delete("/deleteItem", (req, res) => {
-  Item.findOne({ "username": req.body.username })
-    .then((item) => {
 
-      bcrypt.compare(req.body.email, item.email).then(ifMatch => {
-        if (ifMatch) {
+  let accVal = accValidator(req.body);
+  if (accVal.isValid) {
 
-          Item.deleteOne({ username: req.body.username })
-            .then((ok) => {
-              if (ok.n == 0) {
-                res.status(404).send("Item not Deleted")
-              } else { res.status(200).send("Item Deleted") }
-            }).catch(err => res.status(404).json({ noItems: "No Items Exist" }));
-        }
-        else {
-          res.status(404).send("Incorrect Email")
-        }
-      })
-        .catch(err => res.status(404).send("Can't check email"));
-    }).catch(err => res.status(404).send("Incorrect User Name"));
+    Account.findOne({ "username": req.body.username })
+      .then((account) => {
+
+        bcrypt.compare(req.body.password, account.password).then(ifMatch => {
+          if (ifMatch) {
+
+            Item.findOne({ "username": req.body.username })
+              .then((item) => {
+
+                bcrypt.compare(req.body.email, item.email).then(ifMatch => {
+                  if (ifMatch) {
+
+                    Item.deleteOne({ username: req.body.username })
+                      .then((ok) => {
+                        if (ok.n == 0) {
+                          res.status(404).send("Item not Deleted")
+                        } else { res.status(200).send("Item Deleted") }
+                      }).catch(err => res.status(404).json({ noItems: "No Items Exist" }));
+                  }
+                  else {
+                    res.status(404).send("Incorrect Email")
+                  }
+                })
+                  .catch(err => res.status(404).send("Can't check email"));
+              }).catch(err => res.status(404).send("Incorrect User Name"));
+
+          }
+          else {
+            res.send("Incorrect Password")
+          }
+        })
+          .catch(err => res.status(404).send("Password not found"));
+      }).catch(err => res.status(404).send("Account not found"));
+  } else {
+    res.status(404).send(accVal.errors);
+  }
 });
 
 module.exports = router;
